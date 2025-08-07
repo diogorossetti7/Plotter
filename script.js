@@ -1,71 +1,93 @@
-function parseData(content, delimiter) {
-    console.log("Raw file content preview:", content.substring(0, 200)); // First 200 chars
+// Make plotData global so HTML buttons can call it
+window.plotData = plotData;
 
-    let lines = content.trim().split(/\r?\n/);
-    console.log("Number of lines detected:", lines.length);
+// Detect file type and parse accordingly
+document.getElementById("fileInput").addEventListener("change", function (event) {
+    const file = event.target.files[0];
+    if (!file) return;
 
-    let xData = [];
-    let yData = [];
+    const reader = new FileReader();
+    reader.onload = function (e) {
+        const content = e.target.result;
+        const ext = file.name.split('.').pop().toLowerCase();
 
-    for (let line of lines) {
-        let parts = line.trim().split(delimiter);
-        if (parts.length >= 2) {
-            let x = parseFloat(parts[0]);
-            let y = parseFloat(parts[1]);
-            if (!isNaN(x) && !isNaN(y)) {
-                xData.push(x);
-                yData.push(y);
-            }
-        }
-    }
-
-    console.log("Parsed X data:", xData);
-    console.log("Parsed Y data:", yData);
-
-    if (xData.length === 0 || yData.length === 0) {
-        alert("No valid numeric data found. Check your delimiter selection and file format.");
-    }
-
-    return { xData, yData };
-}
-
-function detectDelimiter(content) {
-    const delimiters = [",", ";", "\t", " ", "|"];
-    let bestDelimiter = delimiters[0];
-    let maxParts = 0;
-
-    for (let delim of delimiters) {
-        let parts = content.split("\n")[0].split(delim);
-        if (parts.length > maxParts) {
-            maxParts = parts.length;
-            bestDelimiter = delim;
-        }
-    }
-
-    console.log("Auto-detected delimiter:", JSON.stringify(bestDelimiter));
-    return bestDelimiter;
-}
-
-document.getElementById("fileInput").addEventListener("change", function(e) {
-    let file = e.target.files[0];
-    if (!file) {
-        alert("No file selected.");
-        return;
-    }
-
-    let reader = new FileReader();
-    reader.onload = function(event) {
-        let content = event.target.result;
-        let delimiter = detectDelimiter(content);
-        let { xData, yData } = parseData(content, delimiter);
-
-        if (xData.length > 0 && yData.length > 0) {
-            Plotly.newPlot("plot", [{
-                x: xData,
-                y: yData,
-                mode: 'lines+markers'
-            }]);
+        if (ext === "csv" || ext === "txt") {
+            parseText(content);
+        } else if (ext === "xml") {
+            parseXML(content);
+        } else {
+            alert("Unsupported file type. Please upload CSV, TXT, or XML.");
         }
     };
     reader.readAsText(file);
 });
+
+function parseText(content) {
+    const delimiter = document.getElementById("delimiterSelect").value;
+    let rows = content.trim().split(/\r?\n/);
+    let data = rows.map(row => row.split(delimiter).map(v => v.trim()));
+
+    // Store parsed data globally for plotting
+    window.parsedData = data;
+    alert("Text/CSV file loaded successfully!");
+}
+
+function parseXML(content) {
+    const parser = new DOMParser();
+    const xmlDoc = parser.parseFromString(content, "text/xml");
+
+    let xValues = [];
+    let yValues = [];
+
+    // Assuming <point><x>...</x><y>...</y></point> structure
+    const points = xmlDoc.getElementsByTagName("point");
+    for (let i = 0; i < points.length; i++) {
+        const x = points[i].getElementsByTagName("x")[0]?.textContent || "";
+        const y = points[i].getElementsByTagName("y")[0]?.textContent || "";
+        xValues.push(parseFloat(x));
+        yValues.push(parseFloat(y));
+    }
+
+    window.parsedData = [xValues, yValues];
+    alert("XML file loaded successfully!");
+}
+
+function plotData() {
+    if (!window.parsedData) {
+        alert("Please upload a file first.");
+        return;
+    }
+
+    let xValues, yValues;
+
+    if (Array.isArray(window.parsedData[0])) {
+        // CSV/TXT mode
+        xValues = window.parsedData.map(row => parseFloat(row[0]));
+        yValues = window.parsedData.map(row => parseFloat(row[1]));
+    } else {
+        // XML mode
+        xValues = window.parsedData[0];
+        yValues = window.parsedData[1];
+    }
+
+    const title = document.getElementById("titleInput").value || "My Plot";
+    const xLabel = document.getElementById("xLabelInput").value || "X Axis";
+    const yLabel = document.getElementById("yLabelInput").value || "Y Axis";
+    const color = document.getElementById("colorInput").value || "blue";
+
+    const trace = {
+        x: xValues,
+        y: yValues,
+        mode: "lines+markers",
+        type: "scatter",
+        marker: { color: color }
+    };
+
+    const layout = {
+        title: title,
+        xaxis: { title: xLabel },
+        yaxis: { title: yLabel }
+    };
+
+    Plotly.newPlot("plot", [trace], layout);
+}
