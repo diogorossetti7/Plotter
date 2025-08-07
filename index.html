@@ -1,35 +1,37 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Data Plotter</title>
+    <meta charset="UTF-8">
+    <title>Plotter</title>
 </head>
 <body>
-  <h1>Upload and Plot Data</h1>
+    <h1>Plotter</h1>
 
-  <input type="file" id="fileInput" accept=".txt,.csv,.xml"><br><br>
+    <input type="file" id="csvFile" accept=".csv">
+    <br><br>
 
-  <label>Separator:
-    <select id="separator">
-      <option value=",">Comma (,)</option>
-      <option value=";">Semicolon (;)</option>
-      <option value=" ">Space</option>
-      <option value="\t">Tab</option>
-      <option value="|">Pipe (|)</option>
-      <option value=".">Dot (.)</option>
+    <label for="delimiter">Delimiter:</label>
+    <select id="delimiter">
+        <option value=",">Comma (,)</option>
+        <option value=";">Semicolon (;)</option>
+        <option value="\t">Tab</option>
     </select>
-  </label><br><br>
+    <br><br>
 
-  <label>Chart Title: <input type="text" id="chartTitle"></label><br>
-  <label>X Label: <input type="text" id="xLabel"></label><br>
-  <label>Y Label: <input type="text" id="yLabel"></label><br>
-  <label>Line Color: <input type="color" id="lineColor" value="#007bff"></label><br><br>
+    <label for="xColumn">X Column:</label>
+    <select id="xColumn"></select>
 
-  <button onclick="plotData()">Plot</button>
+    <label for="yColumn">Y Column:</label>
+    <select id="yColumn"></select>
+    <br><br>
 
-  <canvas id="myChart" width="400" height="200"></canvas>
-  
-  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
-  <script defer src="script.js"></script>
+    <button onclick="generatePlot()">Generate Plot</button>
+
+    <div id="plot" style="width: 100%; height: 600px;"></div>
+
+    <!-- Load Plotly first -->
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <!-- Then load our custom script -->
+    <script src="script.js"></script>
 </body>
-
 </html>
