@@ -1,108 +1,71 @@
-let rawData = '';
-let fileType = '';
+function parseData(content, delimiter) {
+    console.log("Raw file content preview:", content.substring(0, 200)); // First 200 chars
 
-document.getElementById('fileInput').addEventListener('change', function (event) {
-  const file = event.target.files[0];
-  fileType = file.name.split('.').pop().toLowerCase();
+    let lines = content.trim().split(/\r?\n/);
+    console.log("Number of lines detected:", lines.length);
 
-  const reader = new FileReader();
+    let xData = [];
+    let yData = [];
 
-  reader.onload = function (e) {
-    rawData = e.target.result;
-  };
-
-  reader.readAsText(file);
-});
-
-function plotData() {
-  if (!rawData) {
-    alert('Please upload a file first.');
-    return;
-  }
-
-  if (fileType === 'xml') {
-    plotFromXML(rawData);
-  } else {
-    plotFromText(rawData);
-  }
-}
-
-function plotFromText(text) {
-  const separator = document.getElementById('separator').value;
-  const lines = text.trim().split('\n');
-  const labels = [];
-  const data = [];
-
-  lines.forEach(line => {
-    const [x, y] = line.split(separator).map(s => s.trim());
-    if (x && y && !isNaN(parseFloat(y))) {
-      labels.push(x);
-      data.push(parseFloat(y));
-    }
-  });
-
-  renderChart(labels, data);
-}
-
-function plotFromXML(xmlString) {
-  const parser = new DOMParser();
-  const xmlDoc = parser.parseFromString(xmlString, "text/xml");
-
-  const entries = xmlDoc.getElementsByTagName("entry");
-  const labels = [];
-  const data = [];
-
-  for (let i = 0; i < entries.length; i++) {
-    const label = entries[i].getElementsByTagName("label")[0]?.textContent;
-    const value = entries[i].getElementsByTagName("value")[0]?.textContent;
-
-    if (label && value && !isNaN(parseFloat(value))) {
-      labels.push(label.trim());
-      data.push(parseFloat(value));
-    }
-  }
-
-  if (labels.length === 0 || data.length === 0) {
-    alert("Invalid XML format. Expected <entry><label>...</label><value>...</value></entry>");
-    return;
-  }
-
-  renderChart(labels, data);
-}
-
-function renderChart(labels, data) {
-  const ctx = document.getElementById('myChart').getContext('2d');
-
-  if (window.myChart) {
-    window.myChart.destroy();
-  }
-
-  window.myChart = new Chart(ctx, {
-    type: 'line',
-    data: {
-      labels: labels,
-      datasets: [{
-        label: document.getElementById('chartTitle').value || 'Dataset',
-        data: data,
-        borderColor: document.getElementById('lineColor').value,
-        fill: false
-      }]
-    },
-    options: {
-      scales: {
-        x: {
-          title: {
-            display: true,
-            text: document.getElementById('xLabel').value
-          }
-        },
-        y: {
-          title: {
-            display: true,
-            text: document.getElementById('yLabel').value
-          }
+    for (let line of lines) {
+        let parts = line.trim().split(delimiter);
+        if (parts.length >= 2) {
+            let x = parseFloat(parts[0]);
+            let y = parseFloat(parts[1]);
+            if (!isNaN(x) && !isNaN(y)) {
+                xData.push(x);
+                yData.push(y);
+            }
         }
-      }
     }
-  });
+
+    console.log("Parsed X data:", xData);
+    console.log("Parsed Y data:", yData);
+
+    if (xData.length === 0 || yData.length === 0) {
+        alert("No valid numeric data found. Check your delimiter selection and file format.");
+    }
+
+    return { xData, yData };
 }
+
+function detectDelimiter(content) {
+    const delimiters = [",", ";", "\t", " ", "|"];
+    let bestDelimiter = delimiters[0];
+    let maxParts = 0;
+
+    for (let delim of delimiters) {
+        let parts = content.split("\n")[0].split(delim);
+        if (parts.length > maxParts) {
+            maxParts = parts.length;
+            bestDelimiter = delim;
+        }
+    }
+
+    console.log("Auto-detected delimiter:", JSON.stringify(bestDelimiter));
+    return bestDelimiter;
+}
+
+document.getElementById("fileInput").addEventListener("change", function(e) {
+    let file = e.target.files[0];
+    if (!file) {
+        alert("No file selected.");
+        return;
+    }
+
+    let reader = new FileReader();
+    reader.onload = function(event) {
+        let content = event.target.result;
+        let delimiter = detectDelimiter(content);
+        let { xData, yData } = parseData(content, delimiter);
+
+        if (xData.length > 0 && yData.length > 0) {
+            Plotly.newPlot("plot", [{
+                x: xData,
+                y: yData,
+                mode: 'lines+markers'
+            }]);
+        }
+    };
+    reader.readAsText(file);
+});
