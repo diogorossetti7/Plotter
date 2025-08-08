@@ -1,0 +1,188 @@
+body {
+    background-color: #000;
+    color: #e0e0e0;
+    font-family: Arial, sans-serif;
+    margin: 20px;
+    animation: fadeIn 1.2s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+h2 {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #fff;
+    text-shadow: 3px 3px rgb(100, 100, 100);
+    font-size: 40px;
+}
+
+.form-row {
+    margin-top: 10px;
+}
+
+label {
+    color: rgba(255, 255, 255, 0.8); /* slightly transparent white */
+    font-size: 14px;
+    margin-top: 8px;
+    display: inline-block; /* keeps labels tidy */
+    transition: color 0.2s ease;
+}
+
+label:hover {
+    color: rgba(255, 255, 255, 1); /* full white on hover */
+}
+
+input, select {
+    background-color: rgba(255, 255, 255, 0.05); /* very transparent white */
+    color: #fff;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 6px;
+    padding: 6px 10px;
+    font-size: 14px;
+    outline: none;
+    transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+input::placeholder {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+input:hover, select:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.5);
+}
+
+input:focus, select:focus {
+    background-color: rgba(255, 255, 255, 0.15);
+    border-color: #fff;
+}
+
+button {
+    background-color: rgba(255, 255, 255, 0.1); /* transparent white */
+    color: #fff;
+    padding: 8px 16px; /* less tall and wide */
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 8px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+    width: auto; /* no forced wide size */
+    min-width: 80px; /* small but clickable */
+}
+
+button:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+    transform: scale(1.05);
+}
+
+button:active {
+    background-color: rgba(255, 255, 255, 0.3);
+    transform: scale(0.98);
+}
+
+h3 {
+    margin-top: 20px;
+    color: rgb(255, 255, 255);
+    display: flex;
+    align-items: center;
+    font-size: 15px;
+}
+
+.axis-row {
+    display: flex;
+    gap: 12px; /* space between fields */
+    flex-wrap: wrap; /* wrap on smaller screens */
+    margin-top: 15px;
+}
+
+.field {
+    display: flex;
+    flex-direction: column;
+    min-width: 150px; /* prevents too narrow fields */
+    flex: 1; /* so they adjust to available space */
+}
+
+.toggle-btn {
+    background-color: rgb(100, 100, 100);
+    color: #000;
+    border: none;
+    padding: 4px 8px;
+    font-size: 0.8em;
+    margin-left: 10px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.toggle-btn:hover {
+    background-color:  rgb(100, 100, 100);
+}
+
+.collapsible {
+    overflow: hidden;
+    max-height: 0;
+    opacity: 0;
+    transition: max-height 0.4s ease, opacity 0.4s ease;
+}
+
+.collapsible.open {
+    max-height: 500px;
+    opacity: 1;
+}
+
+.hidden {
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.8s ease;
+}
+
+.hidden.show {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+#extra-options.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+#extra-options.show {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+#extra-options.show > * {
+    opacity: 0;
+    transform: translateY(10px);
+    animation: fadeInUp 0.6s ease forwards;
+}
+
+#extra-options.show > *:nth-child(1) { animation-delay: 0.1s; }
+#extra-options.show > *:nth-child(2) { animation-delay: 0.2s; }
+#extra-options.show > *:nth-child(3) { animation-delay: 0.3s; }
+#extra-options.show > *:nth-child(4) { animation-delay: 0.4s; }
+#extra-options.show > *:nth-child(5) { animation-delay: 0.5s; }
+/* Add more nth-child as needed */
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+
+#plot {
+    margin-top: 20px;
+    height: 500px;
+    border-radius: 8px;
+    box-shadow: 0 0 15px rgba(0, 255, 255, 0.3);
+    background-color: #111;
+    padding: 10px;
+}
