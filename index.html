@@ -2,17 +2,131 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Plotter</title>
+    <link rel="stylesheet" href="styles.css">
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 </head>
 <body>
-    <h1>Plotter</h1>
-    
-    <input type="file" id="fileInput" accept=".txt">
-    <button onclick="loadAndPlot()">Plot Data</button>
 
-    <div id="plot" style="width:80%; height:500px; margin:auto;"></div>
-    <script src="script.js"></script>
+<h2>Plotter</h2>
+
+<!-- File upload -->
+<div class="axis-row" gap: 30px;>
+    <div class="form-row">
+        <label for="fileInput">Select a text file:</label>
+        <input type="file" id="fileInput" accept=".txt">
+    </div>
+
+<!-- Separator selection -->
+    <div class="form-row">
+        <label for="separator">Separator:</label>
+        <select id="separator">
+            <option value=",">Comma (,)</option>
+            <option value=";">Semicolon (;)</option>
+            <option value=".">Dot (.)</option>
+            <option value="tab">Tab</option>
+        </select>
+    </div>
+</div>
+</div>
+
+<!-- Axis column selection -->
+<div class="axis-row">
+    <div class="field">
+        <label for="xColumn">X Axis Column:</label>
+        <select id="xColumn"></select>
+    </div>
+
+    <div class="field">
+        <label for="yColumn">Y Axis Column:</label>
+        <select id="yColumn"></select>
+    </div>
+
+<!-- Plot title & labels -->
+    <div class="field">
+        <label for="plotTitle">Plot Title:</label>
+        <input type="text" id="plotTitle" placeholder="Enter plot title">
+    </div>
+
+    <div class="field">
+        <label for="xLabel">X Axis Label:</label>
+        <input type="text" id="xLabel" placeholder="Enter X axis label">
+    </div>
+
+    <div class="field">
+        <label for="yLabel">Y Axis Label:</label>
+        <input type="text" id="yLabel" placeholder="Enter Y axis label">
+    </div>
+</div>
+
+<!-- Customization sections -->
+<h3>
+    Plot Appearance 
+    <button class="toggle-btn" data-target="appearanceSection">Show</button>
+</h3>
+<div id="appearanceSection" class="collapsible">
+    <label for="plotBgColor">Plot Background Color:</label>
+    <input type="color" id="plotBgColor" value="#000000">
+
+    <label for="titleColor">Title Color:</label>
+    <input type="color" id="titleColor" value="#ffffff">
+
+    <label for="labelColor">Axis Label Color:</label>
+    <input type="color" id="labelColor" value="#ffffff">
+
+    <label for="showLegend">Show Legend:</label>
+    <select id="showLegend">
+        <option value="true">Yes</option>
+        <option value="false">No</option>
+    </select>
+</div>
+
+<h3>
+    Line & Marker Style 
+    <button class="toggle-btn" data-target="lineMarkerSection">Show</button>
+</h3>
+<div id="lineMarkerSection" class="collapsible">
+    <label for="lineColor">Line Color:</label>
+    <input type="color" id="lineColor" value="#00ffff">
+
+    <label for="lineWidth">Line Width:</label>
+    <input type="number" id="lineWidth" value="2" min="1" max="10">
+
+    <label for="markerColor">Marker Color:</label>
+    <input type="color" id="markerColor" value="#ff0000">
+
+    <label for="markerSize">Marker Size:</label>
+    <input type="number" id="markerSize" value="6" min="1" max="20">
+</div>
+
+<h3>
+    Grid Settings 
+    <button class="toggle-btn" data-target="gridSection">Show</button>
+</h3>
+<div id="gridSection" class="collapsible">
+    <label for="showXGrid">Show X Grid:</label>
+    <select id="showXGrid">
+        <option value="true">Yes</option>
+        <option value="false">No</option>
+    </select>
+
+    <label for="showYGrid">Show Y Grid:</label>
+    <select id="showYGrid">
+        <option value="true">Yes</option>
+        <option value="false">No</option>
+    </select>
+
+    <label for="gridColor">Grid Color:</label>
+    <input type="color" id="gridColor" value="#444444">
+</div>
+
+<!-- Plot button -->
+<button id="plotBtn">Plot Data</button>
+
+<!-- Plot container -->
+<div id="plot"></div>
+
+
+<script src="script.js"></script>
 </body>
 </html>
